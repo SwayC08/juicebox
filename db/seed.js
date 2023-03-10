@@ -8,7 +8,7 @@ async function dropTables() {
     } catch (error) {
         throw error; 
     }
-}
+};
 
 async function createTables() {
     try {
@@ -18,22 +18,21 @@ async function createTables() {
     } catch (error) {
     throw error; 
     }
-}
+};
 
 async function rebuildDB() {
     try {
-    client.connect();
+    // client.connect();
 
-    await dropTables();
-    await createTables();
+    
     } catch (error) {
     console.error(error);
     } finally {
-    client.end();
+    // client.end();
     }
 }
 
-rebuildDB();
+// rebuildDB();
 
 
 
@@ -44,6 +43,10 @@ async function testDB() {
 
         // const { rows } = await client.query(`SELECT * FROM users;`);
         // console.log(rows);
+
+        await dropTables();
+
+        // await createTables();
 
         const users = await getAllUsers();
         console.log(users);
