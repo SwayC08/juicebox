@@ -12,7 +12,22 @@ async function getAllUsers() {
     return rows;
 };
 
+async function createUser({ username, password }) {
+    try {
+    const { rows } = await client.query(`
+        INSERT INTO users(username, password)
+        VALUES ($1, $2)
+        
+    `, [username, password]);
+
+    return rows;
+    } catch (error) {
+    throw error;
+    }
+};
+
 module.exports = {
     client,
     getAllUsers,
+    createUser
 }
