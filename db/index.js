@@ -20,9 +20,11 @@ async function createUser({ username, password, name, location }) {
 };
 
 async function updateUser(id, fields = {}) {
+
     const setString = Object.keys(fields).map(
         (key, index) => `"${ key }"=$${ index + 1 }`
     ).join(', ');
+
     if (setString.length === 0) {
         return;
     }
@@ -77,19 +79,16 @@ async function getUserById(userId) {
     }
 }
 
-async function createPost({
-    authorId,
-    title,
-    content
-}) {
+async function createPost({ authorId, title, content}) {
     try {
-    const { rows: [ post ] } = await client.query(`
-        INSERT INTO posts("authorId", title, content) 
-        VALUES($1, $2, $3)
-        RETURNING *;
-    `, [authorId, title, content]);
+        const { rows: [ post ] } = await client.query(`
+            INSERT INTO posts("authorId", title, content) 
+            VALUES($1, $2, $3)
+            RETURNING *;
+        `, [authorId, title, content]);
 
-    return post;
+        return post;
+
     } catch (error) {
     throw error;
     }
@@ -113,6 +112,7 @@ async function updatePost(id, fields = {}) {
         `, Object.values(fields));
     
         return post;
+
     } catch (error) {
         throw error;
     }
@@ -120,12 +120,13 @@ async function updatePost(id, fields = {}) {
 
 async function getAllPosts() {
     try {
-    const { rows } = await client.query(`
-        SELECT *
-        FROM posts;
-    `);
+        const { rows } = await client.query(`
+            SELECT *
+            FROM posts;
+        `);
 
-    return rows;
+        return rows;
+
     } catch (error) {
     throw error;
     }
@@ -133,13 +134,14 @@ async function getAllPosts() {
 
 async function getPostsByUser(userId) {
     try {
-    const { rows } = await client.query(`
-        SELECT * 
-        FROM posts
-        WHERE "authorId"=${ userId };
-    `);
+        const { rows } = await client.query(`
+            SELECT * 
+            FROM posts
+            WHERE "authorId"=${ userId };
+        `);
 
-    return rows;
+        return rows;
+
     } catch (error) {
     throw error;
     }
