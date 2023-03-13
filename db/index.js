@@ -110,13 +110,13 @@ async function createTags(tagList) {
         (_, index) => `$${index + 1}`).join(', ');
 
     try {
-        await client.query(`
+        const { rows } = await client.query(`
             INSERT INTO tags(name)
-            VALUES ($1), ($2), ($3)
+            VALUES ($1, $2, $3)
             ON CONFLICT (name) DO NOTHING;
         `);
 
-        const { rows } = await client.query(`
+        await client.query(`
             SELECT * FROM tags
             WHERE name
             IN ($1, $2, $3);
@@ -278,17 +278,17 @@ async function getPostById(postId) {
 
 async function getPostsByTagName(tagName) {
     try {
-    const { rows: postIds } = await client.query(`
-        SELECT posts.id
-        FROM posts
-        JOIN post_tags ON posts.id=post_tags."postId"
-        JOIN tags ON tags.id=post_tags."tagId"
-        WHERE tags.name=$1;
-    `, [tagName]);
+        const { rows: postIds } = await client.query(`
+            SELECT posts.id
+            FROM posts
+            JOIN post_tags ON posts.id=post_tags."postId"
+            JOIN tags ON tags.id=post_tags."tagId"
+            WHERE tags.name=$1;
+        `, [tagName]);
 
-    return await Promise.all(postIds.map(
-        post => getPostById(post.id)
-    ));
+        return await Promise.all(postIds.map(
+            post => getPostById(post.id)
+        ));
 
     } catch (error) {
         throw error;
