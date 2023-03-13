@@ -35,17 +35,18 @@ async function createTables() {
                 name VARCHAR(255) UNIQUE NOT NULL
             );
 
-            CREATE TABLE post_tags (
-                "postId" INTEGER REFERENCES tags(id) UNIQUE,
-                "tagId" INTEGER REFERENCES tags(id) UNIQUE
-            );
-
             CREATE TABLE posts (
                 id SERIAL PRIMARY KEY,
                 "authorId" INTEGER REFERENCES users(id),
                 title VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
                 active BOOLEAN DEFAULT true
+            );
+
+            CREATE TABLE post_tags (
+                "postId" INTEGER REFERENCES posts(id),
+                "tagId" INTEGER REFERENCES tags(id),
+                UNIQUE ("postId","tagId")
             );
         `);
         console.log("Finished building tables!");

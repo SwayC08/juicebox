@@ -81,16 +81,19 @@ async function getUserById(userId) {
 }
 
 async function createPost({ authorId, title, content, tags = []}) {
+
     try {
+        console.log("starting insert new post")
         const { rows: [ post ] } = await client.query(`
             INSERT INTO posts("authorId", title, content) 
             VALUES($1, $2, $3)
             RETURNING *;
         `, [authorId, title, content]);
-
+        console.log("finished create post")
         const tagList = await createTags(tags);
-
-        return await addTagsToPost(post.id, tagList);
+        console.log("finished tags")
+        await addTagsToPost(post.id, tagList);
+        console.log("finished adding tags")
         // return post;
 
     } catch (error) {
@@ -112,15 +115,15 @@ async function createTags(tagList) {
     try {
         await client.query(`
             INSERT INTO tags(name)
-            VALUES ($1), ($2), ($3)
+            VALUES (${insertValues})
             ON CONFLICT (name) DO NOTHING;
-        `);
+        `, tagList);
 
         const { rows } = await client.query(`
             SELECT * FROM tags
             WHERE name
-            IN ($1, $2, $3);
-        `);
+            IN (${selectValues});
+        `, tagList);
         
         return rows;   
 
@@ -145,14 +148,17 @@ async function createPostTag(postId, tagId) {
 
 async function addTagsToPost(postId, tagList) {
     try {
+        console.log("starting add tags to post");
         const createPostTagPromises = tagList.map(
             tag => createPostTag(postId, tag.id)
         );
-
+        console.log("finished adding tags to post");
+        console.log(createPostTagPromises);
+        
         await Promise.all(createPostTagPromises);
-
-        return await getPostById(postId);
-
+        console.log(Promise.all);
+        await getPostById(postId);
+        console.log("finished getPostById");
     } catch (error) {
         throw error;
     }
