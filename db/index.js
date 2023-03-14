@@ -30,7 +30,6 @@ async function updateUser(id, fields = {}) {
     }
 
     try {
-        // const result = await client.query(`
         const { rows: [ user ] } = await client.query(`
         UPDATE users
         SET ${ setString }
@@ -93,10 +92,8 @@ async function createPost({ authorId, title, content, tags = []}) {
 
         const tagList = await createTags(tags);
             console.log("finished tags")
-        await addTagsToPost(post.id, tagList);
-            console.log("finished adding tags")
 
-        // return await addTagsToPost(post.id, tagList);
+        return await addTagsToPost(post.id, tagList);
 
     } catch (error) {
         throw error;
@@ -303,6 +300,19 @@ async function getPostsByTagName(tagName) {
     }
 } 
 
+async function getAllTags() {
+    try {
+    const { rows } = await client.query(`
+        SELECT * 
+        FROM tags;
+    `);
+
+    return rows
+    } catch (error) {
+    throw error;
+    }
+}
+
 module.exports = {
     client,
     getAllUsers,
@@ -317,7 +327,8 @@ module.exports = {
     createPostTag,
     createTags,
     getPostById,
-    getPostsByTagName
+    getPostsByTagName,
+    getAllTags
 }
 
 

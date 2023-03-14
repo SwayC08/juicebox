@@ -1,4 +1,4 @@
-const { client, getAllUsers, createUser, updateUser, getUserById, createPost, updatePost, getAllPosts, getPostsByUser, addTagsToPost, createTags, getPostById, createPostTag,getPostsByTagName } = require('./index');
+const { client, getAllUsers, createUser, updateUser, getUserById, createPost, updatePost, getAllPosts, getPostsByUser, addTagsToPost, createTags, getPostById, createPostTag,getPostsByTagName, getAllTags } = require('./index');
 
 async function dropTables() {
     try {
@@ -59,16 +59,15 @@ async function createTables() {
 
 async function createInitialUsers() {
     try {
-    console.log("Starting to create users...");
-    // const albert = 
+        console.log("Starting to create users...");
+    
     await createUser({ username: 'albert', password: 'bertie99', name: 'al', location: 'ks' });
-    // console.log(albert);
-    // const sandra = 
-    await createUser({ username: 'sandra', password: '2sandy4me', name: 'san', location: 'tx'});
-    // const glamgal = 
+
+    await createUser({ username: 'sandra', password: '2sandy4me', name: 'san', location: 'tx'}); 
+
     await createUser({ username: 'glamgal', password: 'soglam', name: 'gla', location: 'ny'});
 
-    console.log("Finished creating users!");
+        console.log("Finished creating users!");
 
     } catch(error) {
         console.error("Error creating users!");
@@ -79,7 +78,7 @@ async function createInitialUsers() {
 async function createInitialPosts() {
     try {
         const [albert, sandra, glamgal] = await getAllUsers();
-        console.log("Starting to create posts...");
+            console.log("Starting to create posts...");
 
         await createPost({
             authorId: albert.id,
@@ -148,30 +147,18 @@ async function rebuildDB() {
     } catch (error) {
         console.log("Error during rebuildDB")
         throw error;
-        // console.error(error);
-    // } finally {
-        // client.end();
     }
 }
-// rebuildDB();
-
-
-
 
 async function testDB() {
     try {
-        // client.connect();
             console.log("Starting to test database...");
 
-        // const { rows } = await client.query(`SELECT * FROM users;`);
-        // console.log(rows);
             console.log("Calling getAllUsers");
 
         const users = await getAllUsers();
             console.log("getAllUsers:", users);
 
-            
-            // console.log(users);
             console.log("Calling updateUser on users[0]")
 
         const updateUserResult = await updateUser(users[0].id, {
@@ -192,7 +179,7 @@ async function testDB() {
             content: "Updated Content"
         });
             console.log("Result:", updatePostResult);
-        
+
             console.log("Calling getUserById with 1");
 
         const albert = await getUserById(1);
@@ -206,7 +193,7 @@ async function testDB() {
             console.log("Result:", updatePostTagsResult);
 
             console.log("Calling getPostsByTagName with #happy");
-        
+
         const postsWithHappy = await getPostsByTagName("#happy");
             console.log("Result:", postsWithHappy);
 
@@ -215,12 +202,8 @@ async function testDB() {
     } catch (error) {
         console.error("Error during testDB!");
         throw error;
-    // } finally {
-        // client.end();
     }
 }
-
-// testDB();
 
 rebuildDB()
     .then(testDB)
